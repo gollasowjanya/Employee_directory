@@ -1,6 +1,6 @@
 ### INSTALLATION
 1 .Clone the repository:
-git clone https://github.com/your-username/your-repository.git
+[git clone https://github.com/your-username/your-repository.git](https://github.com/gollasowjanya/Employee_directory.git)
 2.Navigate into the project directory:
 cd your-repository
 3.Install Dependencies
