@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react';
 import { GlobalContext } from '../context/GlobalState';
-import Modal from '../common/Modal'; 
+import Modal from '../common/Modal';
 
 export const AddEmployee = ({ isOpen, onClose }) => {
   const { addEmployee, employees } = useContext(GlobalContext);
@@ -11,6 +10,17 @@ export const AddEmployee = ({ isOpen, onClose }) => {
   const [location, setLocation] = useState("");
   const [availability, setAvailability] = useState("Part-time");
   const [tags, setTags] = useState([""]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setName("");
+      setDepartment("");
+      setYearsOfExperience("");
+      setLocation("");
+      setAvailability("Part-time");
+      setTags([""]);
+    }
+  }, [isOpen]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -45,7 +55,7 @@ export const AddEmployee = ({ isOpen, onClose }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="w-full max-w-lg container  mx-auto">
+      <div className="w-full max-w-lg container mx-auto">
         <form onSubmit={onSubmit}>
           <div className="w-full mb-5">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="name">

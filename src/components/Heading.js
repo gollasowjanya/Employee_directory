@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-
+import React, { useState,useContext } from "react";
+import { GlobalContext } from "../context/GlobalState";
 import { AddEmployee } from "./EmployeeForm"; 
 
 export const Heading = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { employees } = useContext(GlobalContext);
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -17,7 +17,11 @@ export const Heading = () => {
     <div>
       <div className="flex items-center mb-2">
         <div className="flex-grow text-left px-4 py-2 m-2">
-          <h5 className="text-gray-900 font-bold text-xl">Employee Directory</h5>
+          <h5 className="text-gray-900 font-semibold text-xl">Employee Directory
+          <span className="text-sm text-gray-600 ml-2">
+              ({employees.length} Employees)
+            </span>
+          </h5>
         </div>
         <div className="flex-grow text-right px-4 py-2 m-2">
           <button

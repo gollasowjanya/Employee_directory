@@ -1,0 +1,19 @@
+
+
+
+.common-input {
+    padding: 0.5rem;
+    border: 2px solid #c9c4c4;
+    border-radius: 4px;
+    box-shadow: none;
+    width: 200px;
+    
+  }
+  
+  .common-input:focus {
+    border-color: #ccc;
+    outline: none;
+  }
+
+  
+ 

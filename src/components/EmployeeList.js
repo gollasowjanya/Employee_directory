@@ -5,10 +5,9 @@ import Modal from '../common/Modal';
 import { EditEmployee } from './EditEmployee';
 
 export const EmployeeList = () => {
-  const { employees, removeEmployee, currentPage, employeesPerPage, setCurrentPage } = useContext(GlobalContext);
+  const { employees, removeEmployee, currentPage, employeesPerPage, setCurrentPage, filters, sortBy, searchTerm } = useContext(GlobalContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-  const { sortBy, searchTerm } = useContext(GlobalContext);
 
   const openModal = (employeeId) => {
     setSelectedEmployeeId(employeeId);
@@ -35,9 +34,26 @@ export const EmployeeList = () => {
     }
   };
 
-  const filteredEmployees = employees
-    .filter((employee) => employee.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort(compareFunction);
+  const filteredEmployees = employees.filter(employee => {
+    const matchesFilters = (
+      (filters.department === '' || employee.department === filters.department) &&
+      (filters.location === '' || employee.location === filters.location) &&
+      (filters.availability === '' || employee.availability === filters.availability) &&
+      (filters.tags.length === 0 || filters.tags.some(tag => employee.tags.includes(tag)))
+    );
+
+    const matchesExperience = (
+      filters.minExperience === '' || employee.yearsOfExperience >= filters.minExperience
+    ) && (
+      filters.maxExperience === '' || employee.yearsOfExperience <= filters.maxExperience
+    );
+
+    const matchesSearch = (
+      searchTerm === '' || employee.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return matchesFilters && matchesExperience && matchesSearch;
+  }).sort(compareFunction);
 
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
@@ -47,140 +63,45 @@ export const EmployeeList = () => {
     <React.Fragment>
       {currentEmployees.length > 0 ? (
         <div className="container mx-auto px-4 sm:px-8">
-          <div className="py-5">
-            <div className="overflow-x-auto">
-              <div className="min-w-full shadow rounded-lg">
-                <table className="min-w-full leading-normal overflow-x-auto">
-                  <thead>
-                    <tr>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Name
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Department
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Years of Experience
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Location
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Availability
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Tags
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                      >
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentEmployees.map((employee) => (
-                      <tr key={employee.id}>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {employee.name}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {employee.department}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {employee.yearsOfExperience}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {employee.location}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {employee.availability}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {employee.tags.join(', ')}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right">
-                          <button
-                            onClick={() => openModal(employee.id)}
-                            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold mr-3 py-2 px-4 rounded-full inline-flex items-center"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-edit"
-                            >
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => removeEmployee(employee.id)}
-                            className="block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-full inline-flex items-center"
-                            title="Remove Employee"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trash-2"
-                            >
-                              <polyline points="3 6 5 6 21 6"></polyline>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                              <line x1="10" y1="11" x2="10" y2="17"></line>
-                              <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="py-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {currentEmployees.map((employee) => (
+              <div key={employee.id} data-testid="employee" className="max-w-sm rounded overflow-hidden shadow-lg bg-white">
+                <div className="flex items-center p-4">
+                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300 text-gray-800 font-bold text-xl">
+                    {employee.name.charAt(0)}
+                  </div>
+                  <div className="ml-4">
+                    <div className="font-bold text-xl">{employee.name}</div>
+                    <p className="bg-gray-200 p-1 rounded text-[#548BF4]">{employee.department}</p>
+                  </div>
+                </div>
+                <div className="px-4 py-2">
+                  <p className="text-gray-700 text-base mb-2"><span style={{ fontWeight: '500' }}>Years of Experience:</span> {employee.yearsOfExperience}</p>
+                  <p className="text-gray-700 text-base mb-2"><span style={{ fontWeight: '500' }}>Location:</span> {employee.location}</p>
+                  <p className="text-gray-700 text-base mb-2">
+                    <span style={{ fontWeight: '500' }}>Availability:</span> <span className={`px-2 py-1 rounded ${
+                      employee.availability === 'Full-time' ? 'bg-green-200' : 'bg-red-200'
+                    }`}>{employee.availability}</span>
+                  </p>
+                  <p className="text-gray-700 text-base mb-2"><span style={{ fontWeight: '500' }}>Tags:</span> {employee.tags.join(', ')}</p>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      onClick={() => openModal(employee.id)}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => removeEmployee(employee.id)}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center ml-2"
+                      title="Remove Employee"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       ) : (

@@ -8,11 +8,11 @@ import { GlobalProvider } from './context/GlobalState';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-  <React.StrictMode>
+  
     <GlobalProvider>
     <App />
     </GlobalProvider>
-  </React.StrictMode>
+ 
   </BrowserRouter>
 );
 
