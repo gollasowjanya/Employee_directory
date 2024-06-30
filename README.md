@@ -1,7 +1,7 @@
 ### INSTALLATION
 1 .Clone the repository:
 
-[git clone ](https://github.com/gollasowjanya/Employee_directory.git)
+[git clone https://github.com/gollasowjanya/Employee_directory.git ](https://github.com/gollasowjanya/Employee_directory.git)
 
 2.Navigate into the project directory:
 
